@@ -1,0 +1,15 @@
+.gradle
+/build/
+
+
+.idea/
+*.iws
+
+# IntelliJ
+out/
+
+# Editor-based Rest Client
+.idea/httpRequests
+
+# Kotlin compiler tmp
+.kotlin
