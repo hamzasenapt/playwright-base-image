@@ -18,6 +18,8 @@ permissions:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: hamzasenapt/playwright-base-image
+  PLAYWRIGHT_VERSION: 1.42.0
+  CHROMIUM_VERSION: 1105
 
 jobs:
   build-and-push:
@@ -61,5 +63,8 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            PLAYWRIGHT_VERSION=${{ env.PLAYWRIGHT_VERSION }}
+            CHROMIUM_VERSION=${{ env.CHROMIUM_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
