@@ -1,4 +1,4 @@
-FROM eclipse-temurin:22-jdk
+FROM --platform=$TARGETPLATFORM eclipse-temurin:22-jdk
 
 # Install Playwright dependencies
 RUN apt-get update && apt-get install -y \
@@ -32,10 +32,18 @@ ENV DISPLAY=:99
 RUN mkdir -p /ms-playwright/chromium-1105/chrome-linux && \
     chmod -R 777 /ms-playwright
 
-# Download and install Playwright browser directly (version 1.42.0 uses chromium 1105)
-RUN wget -q https://playwright.azureedge.net/builds/chromium/1105/chromium-linux.zip && \
-    unzip -q chromium-linux.zip -d /ms-playwright/chromium-1105/chrome-linux/ && \
-    rm chromium-linux.zip && \
+# Download and install Playwright browser based on architecture
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+        BROWSER_URL="https://playwright.azureedge.net/builds/chromium/1105/chromium-linux.zip"; \
+    elif [ "$TARGETARCH" = "arm64" ]; then \
+        BROWSER_URL="https://playwright.azureedge.net/builds/chromium/1105/chromium-linux-arm64.zip"; \
+    else \
+        echo "Unsupported architecture: $TARGETARCH" && exit 1; \
+    fi && \
+    wget -q $BROWSER_URL && \
+    unzip -q chromium-linux*.zip -d /ms-playwright/chromium-1105/chrome-linux/ && \
+    rm chromium-linux*.zip && \
     chmod -R 777 /ms-playwright
 
 # Create a non-root user
